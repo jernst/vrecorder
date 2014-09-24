@@ -1,0 +1,80 @@
+{
+    "type" : "app",
+    "roles" : {
+        "apache2" : {
+            "defaultcontext" : "/vrecorder",
+            "depends" : [
+                "php",
+                "php-apache"
+            ],
+            "apache2modules" : [
+                "php5",
+                "autoindex"
+            ],
+            "appconfigitems" : [
+                {
+                    "type" : "file",
+                    "name" : "index.php",
+                    "source" : "index.php",
+                },
+                {
+                    "type" : "file",
+                    "name" : ".htaccess",
+                    "template"     : "htaccess.tmpl",
+                    "templatelang" : "varsubst"
+                },
+                {
+                    "type" : "file",
+                    "name" : "/etc/vrecorder/${installable.customizationpoints.name.value}.conf",
+                    "template"     : "conf.tmpl",
+                    "templatelang" : "varsubst"
+                },
+                {
+                    "type" : "directory",
+                    "name" : "${appconfig.datadir}",
+                    "uname" : "${apache2.uname}",
+                    "gname" : "${apache2.gname}",
+                    "retentionpolicy"  : "keep",
+                    "retentionbucket"  : "pictures"
+                },
+                {
+                    "type" : "symlink",
+                    "name" : "img",
+                    "source" : "${appconfig.datadir}"
+                },
+                {
+                    "type" : "perlscript",
+                    "source" : "activate.pl"
+                }
+            ]
+        }
+    },
+    "customizationpoints" : {
+        "name" : {
+            "name" : "Camera name",
+            "type" : "string",
+            "required" : true
+        },
+        "url" : {
+            "name" : "JPG URL (with user/password if needed)",
+            "type" : "url",
+            "required" : true
+        },
+        "periodmillis" : {
+            "name" : "milliseconds between subsequent pictures",
+            "type" : "positiveinteger",
+            "required" : true,
+            "default" : {
+                "value" : 1000
+            }
+        },
+        "loopminutes" : {
+            "name" : "minutes of recordings to keep before purging",
+            "type" : "integer",
+            "required" : false,
+            "default" : {
+                "value" : -1
+            }
+        }
+    }
+}

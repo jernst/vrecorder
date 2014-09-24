@@ -1,0 +1,15 @@
+[Unit]
+Description=Vrecorder service
+After=multi-user.target
+
+[Service]
+User=http
+Group=http
+
+Type=simple
+ExecStart=/usr/bin/perl /usr/share/vrecorder/vrecorder.pl --conf /etc/vrecorder/%i.conf
+
+# Restart=always
+
+[Install]
+WantedBy=multi-user.target
