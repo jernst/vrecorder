@@ -1,0 +1,13 @@
+* {
+    font-family: Arial, Sans;
+}
+
+body {
+    margin: 0 auto;
+    width: 800px;
+}
+
+div.footer {
+    margin-top: 40px;
+    font-size: small;
+}

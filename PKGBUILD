@@ -28,8 +28,10 @@ package() {
 
 # Web
     install -m0755 $startdir/index.php $pkgdir/usr/share/$pkgname/
+    install -m0644 $startdir/style.css $pkgdir/usr/share/$pkgname/
 
 # Templates
+    install -m0644 $startdir/conf.php.tmpl $pkgdir/usr/share/$pkgname/
     install -m0644 $startdir/conf.tmpl     $pkgdir/usr/share/$pkgname/
     install -m0644 $startdir/htaccess.tmpl $pkgdir/usr/share/$pkgname/
 

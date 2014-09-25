@@ -5,3 +5,16 @@
 Options +FollowSymLinks
 Options +Indexes
 
+Alias ${appconfig.context}/img ${appconfig.datadir}
+ScriptAliasMatch ${appconfig.context}/(\d\d\d\d.*) ${appconfig.apache2.dir}/index.php
+
+# php5_module definitely should be active, but in case it is wrong, let's not break other sites
+<IfModule php5_module> 
+ <Directory "${appconfig.apache2.dir}">
+  php_admin_value open_basedir ${appconfig.apache2.dir}:/tmp/:/usr/share/vrecorder:${appconfig.datadir}
+ </Directory>
+</IfModule> 
+
+<Directory "${appconfig.datadir}">
+ Require all granted
+</Directory>

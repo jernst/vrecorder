@@ -19,7 +19,18 @@
                 },
                 {
                     "type" : "file",
-                    "name" : ".htaccess",
+                    "name" : "style.css",
+                    "source" : "style.css",
+                },
+                {
+                    "type" : "file",
+                    "name" : "conf.php",
+                    "template"     : "conf.php.tmpl",
+                    "templatelang" : "varsubst"
+                },
+                {
+                    "type" : "file",
+                    "name" : "${appconfig.apache2.appconfigfragmentfile}",
                     "template"     : "htaccess.tmpl",
                     "templatelang" : "varsubst"
                 },
@@ -36,11 +47,6 @@
                     "gname" : "${apache2.gname}",
                     "retentionpolicy"  : "keep",
                     "retentionbucket"  : "pictures"
-                },
-                {
-                    "type" : "symlink",
-                    "name" : "img",
-                    "source" : "${appconfig.datadir}"
                 },
                 {
                     "type" : "perlscript",
