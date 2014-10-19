@@ -110,27 +110,19 @@ function showFilesInHourDir( $year, $month, $day, $hour ) {
     global $conf;
 
     $hourDir   = $conf['directory'] . "/$year/$month/$day/$hour";
-    $picPrefix = $conf['context'] . "/img/$year/$month/$day/$hour";
+    $picPrefix = $conf['context']   . "/img/$year/$month/$day/$hour";
 
-    if( is_dir( $hourDir ) && $hourDirHandle = opendir( $hourDir )) {
-        while( false !== ( $min = readdir( $hourDirHandle ))) {
-            if( $min == '.' || $min == '..' ) {
-                continue;
-            }
-            print "  <h2>$year/$month/$day $hour:$min:00 UTC</h2>\n";
+    $minutes = filesInDir( $hourDir );
+    foreach( $minutes as $minute ) {
+    
+        print "  <h2>$year/$month/$day $hour:$minute:00 UTC</h2>\n";
 
-            $minDir = "$hourDir/$min";
-            if( is_dir( $minDir ) && $minDirHandle = opendir( $minDir )) {
-                while( false !== ( $file = readdir( $minDirHandle ))) {
-                    if( $file == '.' || $file == '..' ) {
-                        continue;
-                    }
-                    print "   <img src='$picPrefix/$min/$file'>\n";
-                }
-                closedir( $minDirHandle );
-            }
+        $minuteDir = "$hourDir/$minute";
+        $files = filesInDir( $minuteDir );
+
+        foreach( $files as $file ) {
+            print "   <img src='$picPrefix/$minute/$file'>\n";
         }
-        closedir( $hourDirHandle );
     }
 }
 
