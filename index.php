@@ -22,90 +22,87 @@ function is_img( $file ) {
 function listYear( $containsYearsDir, $indent = 2 ) {
     $ret = 0;
     $isFirst = TRUE;
-    if( $containsYearsHandle = opendir( $containsYearsDir )) {
-        while( false !== ( $year = readdir( $containsYearsHandle ))) {
-            if( $year == '.' || $year == '..' ) {
-                continue;
-            }
-            $containsMonthsDir = "$containsYearsDir/$year";
-            if( is_dir( $containsMonthsDir ) && $containsMonthsHandle = opendir( $containsMonthsDir )) {
-                while( false !== ( $month = readdir( $containsMonthsHandle ))) {
-                    if( $month == '.' || $month == '..' ) {
-                        continue;
-                    }
-                    $containsDaysDir = "$containsMonthsDir/$month";
-                    if( is_dir( $containsDaysDir ) && $containsDaysHandle = opendir( $containsDaysDir )) {
-                        while( false !== ( $day = readdir( $containsDaysHandle ))) {
-                            if( $day == '.' || $day == '..' ) {
-                                continue;
-                            }
-                            $containsHoursDir = "$containsDaysDir/$day";
-                            
-                            if( $isFirst ) {
-                                print indent( $indent ) . "<dl>\n";
-                                $isFirst = FALSE;
-                            }
-                            print indent( $indent+1 ) . "<dt>$year/$month/$day:</dt>\n";
-                            print indent( $indent+1 ) . "<dd>\n";
 
-                            if( is_dir( $containsHoursDir )) {
-                                $ret += listDay( $year, $month, $day, $containsHoursDir, $indent+1 );
-                            } else {
-                                print "&mdash;";
-                            }
+    $years = filesInDir( $containsYearsDir );
+    foreach( $years as $year ) {
+    
+        $containsMonthsDir = "$containsYearsDir/$year";
+        $months = filesInDir( $containsMonthsDir );
+
+        foreach( $months as $month ) {
+
+            $containsDaysDir = "$containsMonthsDir/$month";
+            $days = filesInDir( $containsDaysDir );
+
+            foreach( $days as $day ) {
+
+                $containsHoursDir = "$containsDaysDir/$day";
                             
-                            print indent( $indent+1 ) . "</dd>\n";
-                        }
-                        closedir( $containsDaysHandle );
-                    }
+                if( $isFirst ) {
+                print indent( $indent ) . "<dl>\n";
+                    $isFirst = FALSE;
                 }
-                closedir( $containsMonthsHandle );
+                print indent( $indent+1 ) . "<dt>$year/$month/$day:</dt>\n";
+                print indent( $indent+1 ) . "<dd>\n";
+
+                if( is_dir( $containsHoursDir )) {
+                    $ret += listDay( $year, $month, $day, $containsHoursDir, $indent+1 );
+                } else {
+                    print "&mdash;";
+                }
+                
+                print indent( $indent+1 ) . "</dd>\n";
             }
         }
-        closedir( $containsYearsHandle );
-        if( !$isFirst ) {
-            print indent( $indent ) . "</dl>\n";
-        }
+    }
+    if( !$isFirst ) {
+        print indent( $indent ) . "</dl>\n";
     }
     return $ret;
 }
 
 function listDay( $year, $month, $day, $containsHoursDir, $indent ) {
     $ret = 0;
-    if( $containsHoursHandle = opendir( $containsHoursDir )) {
-        while( false !== ( $hour = readdir( $containsHoursHandle ))) {
-            if( $hour == '.' || $hour == '..' ) {
+
+    $hours = filesInDir( $containsHoursDir );
+    foreach( $hours as $hour ) {
+
+        $nImages = 0;
+        $containsMinsDir = "$containsHoursDir/$hour";
+
+        $minutes = filesInDir( $containsMinsDir );
+        foreach( $minutes as $minute ) {
+
+            $containsFilesDir = "$containsMinsDir/$minute";
+
+            $files = filesInDir( $containsFilesDir );
+            foreach( $files as $file ) {
+
+                $fullFile = "$containsFilesDir/$file";
+                if( is_img( $fullFile )) {
+                    ++$nImages;
+                }
+            }
+        }
+        print "<p>$hour:00: <a href=\"$year/$month/$day/$hour/\">$nImages images</a></p>\n";
+        $ret += $nImages;
+    }
+    return $ret;
+}
+
+function filesInDir( $dir ) {
+    $ret = array();
+    if( is_dir( $dir ) && $handle = opendir( $dir )) {
+        while( false !== ( $file = readdir( $handle ))) {
+            if( $file == '.' || $file == '..' ) {
                 continue;
             }
-            $nImages = 0;
-            $containsMinsDir = "$containsHoursDir/$hour";
-            if( is_dir( $containsMinsDir ) && $containsMinsHandle = opendir( $containsMinsDir )) {
-                while( false !== ( $min = readdir( $containsMinsHandle ))) {
-                    if( $min == '.' || $min == '..' ) {
-                        continue;
-                    }
-                    $containsFilesDir = "$containsMinsDir/$min";
-                    if( is_dir( $containsFilesDir ) && $containsFilesHandle = opendir( $containsFilesDir )) {
-                        while( false !== ( $file = readdir( $containsFilesHandle ))) {
-                            if( $file == '.' || $file == '..' ) {
-                                continue;
-                            }
-                            $fullFile = "$containsFilesDir/$file";
-                            if( is_img( $fullFile )) {
-                                ++$nImages;
-                            }
-                        }
-                        closedir( $containsFilesHandle );
-                    }
-                }
-                closedir( $containsMinsHandle );
-            }
-            print "<p>$hour:00: <a href=\"$year/$month/$day/$hour/\">$nImages images</a></p>\n";
-            $ret += $nImages;
+            $ret[] = $file;
         }
-    }
-    closedir( $containsHoursHandle );
+        closedir( $handle );
 
+        sort( $ret );
+    }
     return $ret;
 }
 
